@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
@@ -28,7 +29,6 @@
   <ItemGroup>
     <Folder Include="Pics\" />
     <Folder Include="Views\Catalog\" />
-    <Folder Include="Views\Account\" />
     <Folder Include="wwwroot\css\catalog\" />
     <Folder Include="wwwroot\fonts\" />
   </ItemGroup>

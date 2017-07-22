@@ -8,9 +8,10 @@ using Microsoft.eShopWeb.Infrastructure;
 namespace Microsoft.eShopWeb.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogContext))]
-    partial class CatalogContextModelSnapshot : ModelSnapshot
+    [Migration("20170722074649_20170302162241_Initial1")]
+    partial class _20170302162241_Initial1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")

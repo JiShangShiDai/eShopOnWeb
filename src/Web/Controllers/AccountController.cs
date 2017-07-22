@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Infrastructure.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Controllers
 {
@@ -15,19 +16,18 @@ namespace Microsoft.eShopWeb.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly string _externalCookieScheme;
+        private readonly ILogger<AccountController> _logger;
 
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-                        IOptions<IdentityCookieOptions> identityCookieOptions
-
-)
+                        IOptions<IdentityCookieOptions> identityCookieOptions, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
-
+            _logger = logger;
         }
 
         //
@@ -55,7 +55,7 @@ namespace Microsoft.eShopWeb.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     //_logger.LogInformation(1, "User logged in.");
@@ -89,10 +89,52 @@ namespace Microsoft.eShopWeb.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(CatalogController.Index), "Home");
+                return RedirectToAction(nameof(CatalogController.Index), "Catalog");
             }
         }
 
+        //
+        // GET: /Account/Register
+        public IActionResult Register()
+        {
+            return View();
+        }
 
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("User {userName} was created.", model.Email);
+                    return RedirectToAction("SignIn");
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+            return View(model);
+        }
+
+        //
+        // POST: /Account/LogOff
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> LogOff()
+        {
+            var userName = HttpContext.User.Identity.Name;
+
+            await _signInManager.SignOutAsync();
+
+            _logger.LogInformation("{userName} logged out.", userName);
+            return RedirectToAction("Index", "Catalog");
+        }
     }
 }
